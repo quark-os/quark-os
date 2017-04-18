@@ -1,0 +1,23 @@
+--Steps to bootstrap--
+	1.) Mount boot partition
+	2.) Load Charm ELF
+	3.) Switch to protected mode
+	4.) Jump to Charm
+
+1. Mount boot partition
+	1.1) Load GPT
+	1.2) Verify GPT integrity
+	1.3) Find bootable partition
+	1.4) Load FS header into memory
+
+2. Load Charm ELF
+	2.1) Find Charm ELF in FS
+	2.2) Load file into memory
+	2.3) Check for integrity
+
+3. Switch to protected mode
+	3.1) Set protected mode bit
+
+4. Jump to charm
+	4.1) Check for entry point
+	4.2) Jump to entry point

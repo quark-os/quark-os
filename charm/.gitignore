@@ -1,0 +1,4 @@
+bin/*
+*.o
+*.db
+*.anjuta
