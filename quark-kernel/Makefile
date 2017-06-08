@@ -1,4 +1,4 @@
-quark_obj = entry.o main.o scheduler.o gdt.o
+quark_obj = entry.o main.o scheduler.o gdt.o malloc.o
 static_libs = libpio.a libx86idt.a
 link_script = linker.ld
 

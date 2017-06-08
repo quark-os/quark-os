@@ -16,6 +16,14 @@
 
 extern "C"
 {
+	
+	typedef struct FreeBlockHeader
+	{
+		uint32_t flag;
+		uint32_t size;
+		uint32_t link;
+	};
+	
 	char* vga;
 		
 	int cursorX, cursorY;
@@ -28,7 +36,13 @@ extern "C"
 	
 	void task2();
 	
-	void itoa(uint32_t src, char* dest, int base, bool trailingZeros = false, bool bigEndian = true)
+	void setup_paging();
+	
+	void initializeHeap(void* heapLocation, uint32_t size);
+	
+	void* allocate(FreeBlockHeader* avail, uint32_t size);
+	
+	void itoa(uint32_t src, char* dest, int base = 10, bool trailingZeros = false, bool bigEndian = true)
 	{
 		char* digits = "0123456789ABCDEF";
 		int i = 0;
@@ -90,6 +104,15 @@ extern "C"
 			}
 		}
 		
+		FreeBlockHeader heap;
+		heap.link = 0x180000;
+		initializeHeap((void*) heap.link, 0x80000);
+		int* num = allocate(&heap, sizeof(int));
+		char s[64];
+		itoa((uint32_t) num, s, 16, true, true);
+		printString(s);
+		
+		/*
 		asm("cli");
 		GDT gdt = GDT(0x280000);
 		gdt.writeDescriptor(1, (void*) 0, (void*) 0xFFFFFFFF, KERNEL_CODE_SEL);
@@ -98,10 +121,12 @@ extern "C"
 		gdt.update();
 		InterruptController::init(0x200000);
 		InterruptController::addInterrupt((uint8_t) 0x20, (void*) switch_context);
+		setup_paging();
 		asm("sti");
 		
-		asm("jmp task1");
+		asm("jmp task1");*/
 		
+		asm("cli");
 		void* a = inb;
 		
 		while(true) asm("hlt");
