@@ -1,9 +1,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+
 #include "interruptcontroller.h"
 #include "gdt.h"
 #include "pio.h"
+#include "Heap.h"
+#include "Console.h"
 
 /*
  * Memory Map:
@@ -13,20 +16,11 @@
  * 	0x280000	GDT
  * 
  * */
+ 
+Console kout;
 
 extern "C"
 {
-	
-	typedef struct FreeBlockHeader
-	{
-		uint32_t flag;
-		uint32_t size;
-		uint32_t link;
-	};
-	
-	char* vga;
-		
-	int cursorX, cursorY;
 	
 	void switch_context();
 	
@@ -40,77 +34,29 @@ extern "C"
 	
 	void initializeHeap(void* heapLocation, uint32_t size);
 	
-	void* allocate(FreeBlockHeader* avail, uint32_t size);
-	
-	void itoa(uint32_t src, char* dest, int base = 10, bool trailingZeros = false, bool bigEndian = true)
+	struct Block
 	{
-		char* digits = "0123456789ABCDEF";
-		int i = 0;
-		while((src > 0 || trailingZeros) && i < (base == 16 ? 8 : (base == 2 ? 32 : 10)))
-		{
-			dest[i] = digits[src % base];
-			src /= base;
-			i++;
-		}
-		dest[i] = 0;
-		if(bigEndian)
-		{
-			for(int j = 0; j < (i % 2 == 0 ? (i / 2) : ((i - 1) / 2)); j++)
-			{
-				char buffer = dest[j];
-				dest[j] = dest[i - j - 1];
-				dest[i - j - 1] = buffer;
-			}
-		}
-	}
+		void* location;
+		uint32_t size;
+	};
 	
-	void printString(char* str)
+	uint32_t state = 192837368;
+	
+	uint32_t rand()
 	{
-		for(int i = 0; str[i] != 0; i++)
-		{
-			if(str[i] != '\n')
-			{
-				vga[(cursorY * 80 + cursorX) * 2] = str[i];
-			}
-			else
-			{
-				cursorX = 0;
-				cursorY++;
-			}
-			
-			if(cursorX == 79)
-			{
-				cursorX = 0;
-				cursorY++;
-			}
-			else
-			{
-				cursorX++;
-			}
-		}
+		uint32_t x = state;
+		x ^= x << 13;
+		x ^= x >> 17;
+		x ^= x << 5;
+		state = x;
+		return x;
 	}
-	
+		
 	void main()
 	{
-		vga = (char*) 0xB8000;
-		cursorX = 0;
-		cursorY = 0;
+		kout.clear();
 		
-		for(int i = 0; i < 80; i++)
-		{
-			for(int j = 0; j < 25; j++)
-			{
-				vga[(j * 80 + i) * 2] = ' ';
-			}
-		}
-		
-		FreeBlockHeader heap;
-		heap.link = 0x180000;
-		initializeHeap((void*) heap.link, 0x80000);
-		int* num = allocate(&heap, sizeof(int));
-		char s[64];
-		itoa((uint32_t) num, s, 16, true, true);
-		printString(s);
+		Heap heap(0x180000, 0x1000000);		
 		
 		/*
 		asm("cli");

@@ -17,6 +17,7 @@
 initializeHeap:				# initializeHeap(void* heapLocation, uint32_t size)
 	mov ecx, [esp + 8]		# Load size of heap in bytes
 	mov edx, [esp + 4]		# Load location of heap
+	sub ecx, 20
 	movw [edx], 0x9999
 	movw [edx + 2], 0x9999	# Write 'free' flag at start of heap
 	mov [edx + 4], ecx		# Write size of heap

@@ -1,10 +1,10 @@
-quark_obj = entry.o main.o scheduler.o gdt.o malloc.o
-static_libs = libpio.a libx86idt.a
+quark_obj = entry.o main.o scheduler.o gdt.o Heap.o
+static_libs = libpio.a libx86idt.a libkconsole.a
 link_script = linker.ld
 
 CXX = i686-elf-g++
 CC = i686-elf-g++
-CPPFLAGS += -I~/.quark/include/ -I/usr/cross/include -O0 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fpermissive -g
+CPPFLAGS += -I$(HOME)/.quark/include -O0 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fpermissive -g
 
 crti_obj=src/crti.o
 crtbegin_obj:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
