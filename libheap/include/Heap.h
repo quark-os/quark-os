@@ -42,4 +42,6 @@ private:
 
 };
 
+extern Heap heap;
+
 #endif

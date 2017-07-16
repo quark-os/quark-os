@@ -1,7 +1,6 @@
 #include "Heap.h"
-#include "Console.h"
 
-extern Console kout;
+Heap heap;
 
 Heap::Heap()
 {
@@ -16,9 +15,7 @@ Heap::Heap(void* location, uint32_t size)
 	this->location.link->link = 0;
 	this->heapStart = location;
 	this->heapSize = size;
-	this->numFreeBlocks = 1;
-	
-	kout << "[heap] Initializing heap at " << location << " with size " << size << "\n";
+	this->numFreeBlocks = 1;	
 }
 
 void* Heap::allocate(uint32_t size)
@@ -34,8 +31,6 @@ void* Heap::allocate(uint32_t size)
 		p = q->link;
 		if(p == 0)
 		{
-			kout << "[heap] ERROR: Out of memory!!\n";
-			while(true);
 			return 0;
 		}
 		else if(p->size + sizeof(BlockHeader) - REDUCED_BLOCK_HEADER_SIZE >= size)
@@ -68,14 +63,10 @@ void* Heap::allocate(uint32_t size)
 	
 	if(reinterpret_cast<uint32_t>(allocatedLocation) < reinterpret_cast<uint32_t>(heapStart))
 	{
-		kout << "[heap] BUG: Attempt to allocate below bounds of heap\n";
-		while(true);
 		return 0;
 	}
 	else if(reinterpret_cast<uint32_t>(allocatedLocation) > reinterpret_cast<uint32_t>(heapStart) + this->heapSize)
 	{
-		kout << "[heap] BUG: Attempt to allocate above bounds of heap\n";
-		while(true);
 		return 0;
 	}
 	else
@@ -87,7 +78,6 @@ void* Heap::allocate(uint32_t size)
 void* Heap::free(void* location)
 {
 	BlockHeader* freedBlock = (BlockHeader*) (reinterpret_cast<uint32_t>(location) - static_cast<uint32_t>(REDUCED_BLOCK_HEADER_SIZE));
-	//kout << "[heap] Freeing block w/ allocated space at " << location << " with size " << freedBlock->size << "\n";
 	BlockHeader* prev = &(this->location);
 	BlockHeader* next;
 	while(true)
@@ -153,8 +143,6 @@ size_t Heap::freeMemory()
 void Heap::dumpState()
 {
 	size_t freeMem = freeMemory();
-	kout << "Heap info:" << "\n";
-	kout << "  " << freeMem / 1024 << " KiB free\n";
 	
 	size_t listSize = 0;
 	size_t largestBlock = 0;
@@ -178,9 +166,6 @@ void Heap::dumpState()
 		}
 		prev = next;
 	}
-	kout << "  " << largestBlock / 1024 << " KiB in largest free block\n";
-	kout << "  " << listSize << " separate free blocks\n";
-	kout << "  " << (freeMem / listSize) / 1024 << " KiB is mean block size (" << ((freeMem - largestBlock) / listSize) << "B excluding largest block)\n";
 }
 
 bool Heap::checkListOrder()

@@ -1,5 +1,5 @@
-quark_obj = entry.o main.o scheduler.o gdt.o Heap.o
-static_libs = libpio.a libx86idt.a libkconsole.a
+quark_obj = entry.o main.o scheduler.o Process.o Scheduler.o Interrupts.o Syscalls.cpp
+static_libs = libpio.a libx86idt.a libheap.a libkconsole.a
 link_script = linker.ld
 
 CXX = i686-elf-g++
@@ -13,8 +13,8 @@ crtn_obj=src/crtn.o
 
 object_files = $(crti_obj) $(crtbegin_obj) $(addprefix src/, $(quark_obj)) $(crtend_obj) $(crtn_obj)
 
-LINKFLAGS = -T $(link_script) -ffreestanding -nostdlib -lgcc
+LINKFLAGS = -T $(link_script) -ffreestanding -nostdlib -lgcc 
 
 quark: $(crti_obj) $(crtbegin_obj) $(crtend_obj) $(crtn_obj) $(addprefix src/, $(quark_obj))
 	mkdir -p bin
-	$(CXX) $(LINKFLAGS) $(object_files) $(addprefix ~/.quark/lib/, $(static_libs)) -o bin/quark
+	$(CXX) -I$(HOME)/.quark/include $(LINKFLAGS) $(object_files) $(addprefix ~/.quark/lib/, $(static_libs)) -o bin/quark

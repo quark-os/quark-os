@@ -3,7 +3,7 @@ obj = idt.o idtdescriptor.o lidt.o interruptcontroller.o picdriver.o gdtdescript
 CXX = i686-elf-g++
 CC = i686-elf-g++
 AR = i686-elf-ar
-CPPFLAGS += -Iinclude/ -I/usr/cross/include/ -O0 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fpermissive -c
+CPPFLAGS += -Iinclude/ -I$(HOME)/.quark/include/ -O0 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fpermissive -c
 
 libx86idt: $(addprefix src/, $(obj))
 	mkdir -p bin
