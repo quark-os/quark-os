@@ -24,6 +24,7 @@ _start:
 
 	mov $stack_top, %esp
 
+	cli
 	call _init
 	call main
 	call _fini

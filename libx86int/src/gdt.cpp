@@ -16,7 +16,7 @@ GDT::GDT(void* gdtLocation)
 
 void GDT::update()
 {
-	loadGDT(GDT_SIZE * 8 - 1, (uint32_t) gdt);
+	loadGDT(GDT_SIZE * GDT_DESC_SIZE - 1, (uint32_t) gdt);
 }
 
 void GDT::writeDescriptor(uint8_t index, void* base, void* limit, uint8_t type)

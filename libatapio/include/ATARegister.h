@@ -1,0 +1,17 @@
+#ifndef __ATAREGISTER_H
+#define __ATAREGISTER_H
+
+enum ATARegister
+{
+	ATA_DATA,
+	ATA_FEATURES,
+	ATA_SECTOR_COUNT,
+	ATA_LBA_LO,
+	ATA_LBA_MID,
+	ATA_LBA_HI,
+	ATA_DRIVE,
+	ATA_COMMAND,
+	ATA_STATUS = 7
+};
+
+#endif

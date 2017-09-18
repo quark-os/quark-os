@@ -13,6 +13,8 @@ public:
 	
 	size_t createProcess(void* entry);
 	
+	size_t createProcess(void* entry, void* stack);
+	
 	void* nextProcess(void* prevStack);
 	
 	void killProcess(size_t pid);

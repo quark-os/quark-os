@@ -190,3 +190,23 @@ bool Heap::checkListOrder()
 	}
 	return true;
 }
+
+void *operator new(size_t size)
+{
+    return heap.allocate(size);
+}
+ 
+void *operator new[](size_t size)
+{
+    return heap.allocate(size);
+}
+ 
+void operator delete(void *p)
+{
+    heap.free(p);
+}
+ 
+void operator delete[](void *p)
+{
+    heap.free(p);
+}

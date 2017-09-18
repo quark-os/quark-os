@@ -13,6 +13,19 @@ inb: # inb(port)
 	in al, dx
 	ret
 
+.global outw
+outw: # outw(port, data)
+	mov dx, [esp + 4]
+	mov ax, [esp + 8]
+	out dx, ax
+	ret
+
+.global inw
+inw: # inw(port)
+	mov dx, [esp + 4]
+	in ax, dx
+	ret
+
 .global io_wait
 io_wait: # io_wait(); wastes an io cycle
 	mov dx, 0x90

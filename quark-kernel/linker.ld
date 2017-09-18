@@ -8,7 +8,8 @@ SECTIONS
 {
 	/* Begin putting sections at 1 MiB, a conventional place for kernels to be
 	   loaded at by the bootloader. */
-	. = 1M;
+	/*. = 1M; TODO: The kernel should be loaded here, but the bootloader doesn't support it*/
+	. = 64K;
 
 	/* First put the multiboot header, as it is required to be put very early
 	   early in the image or the bootloader won't recognize the file format.

@@ -5,6 +5,8 @@ template Console& Console::operator<< <unsigned int>(unsigned int);
 template Console& Console::operator<< <long int>(long int);
 template Console& Console::operator<< <long unsigned int>(long unsigned int);
 
+Console kout;
+
 Console::Console()
 {
 	vga = (char*) 0xB8000;
@@ -37,6 +39,19 @@ Console& Console::operator<<(void* ptr)
 	return *this;
 }
 
+void Console::memdump(void* location, uint32_t size)
+{
+	char* locationData = reinterpret_cast<char*>(location);
+	for(int i = 0; i < size; i++)
+	{
+		char string[3];
+		intToString((uint8_t) locationData[i], string, 16, true);
+		print(string);
+		print(" ");
+	}
+	print("\n");
+}
+
 void Console::clear()
 {
 	for(int x = 0; x < width; x++) 
@@ -54,13 +69,16 @@ void Console::print(char* string)
 {
 	for(int i = 0; string[i] != 0; i++)
 	{
-		if(string[i] == '\n')
+		char c = string[i];
+		if(c == '\n')
 		{
 			newline();
 		}
 		else
-		{ 
-			vga[2 * (cursorY * width + cursorX)] = string[i];
+		{
+			if(c == '\t')
+				c = ' ';
+			vga[2 * (cursorY * width + cursorX)] = c;
 			cursorX++;
 			if(cursorX == width)
 			{

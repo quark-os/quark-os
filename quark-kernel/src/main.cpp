@@ -9,6 +9,11 @@
 #include "List.h"
 #include "Interrupts.h"
 #include "Scheduler.h"
+#include "ATAPIODriver.h"
+#include "Filesystem.h"
+#include "ELF.h"
+#include "PageAllocator.h"
+#include "math.h"
 
 /*
  * Memory Map:
@@ -21,7 +26,9 @@
  * 
  * */
  
-Console kout;
+//Console kout;
+
+PageAllocator pageAllocator;
 
 extern "C"
 {
@@ -47,71 +54,50 @@ extern "C"
 		state = x;
 		return x;
 	}
-	
-	void task1_main()
-	{
-		asm("sti");
-		while(true)
-		{
-			kout << "a";
-			for(int i = 0; i < 10000000; i++) kout << "";
-		}
-	}
-	
-	void task2_main()
-	{
-		asm("sti");
-		while(true)
-		{
-			kout << "b";
-			for(int i = 0; i < 10000000; i++) kout << "";
-		}
-	}
-	
-	void task3_main()
-	{
-		asm("sti");
-		while(true)
-		{
-			kout << "c";
-			for(int i = 0; i < 10000000; i++) kout << "";
-		}
-	}
-	
-	void task4_main()
-	{
-		asm("sti");
-		while(true)
-		{
-			kout << "d";
-			for(int i = 0; i < 10000000; i++) kout << "";
-		}
-	}
 		
 	void main()
 	{
-		kout.clear();
-		
-		heap = Heap((void*) 0x180000, 0x80000);
-		
 		asm("cli");
-		GDT gdt = GDT(0x280000);
+		kout = Console();
+		heap = Heap((void*) 0x180000, 0x280000);
+		pageAllocator = PageAllocator(0x400000, 256 * 100); // Allocate pages from a pool of 100MiB, starting at 4MiB
+		kout.clear();
+		void* gdtLocation = heap.allocate(GDT_SIZE * GDT_DESC_SIZE);
+		void* idtLocation = heap.allocate(IDT_SIZE * IDT_DESC_SIZE);
+		
+		GDT gdt = GDT(gdtLocation);
 		gdt.writeDescriptor(1, (void*) 0, (void*) 0xFFFFFFFF, KERNEL_CODE_SEL);
 		gdt.writeDescriptor(2, (void*) 0, (void*) 0xFFFFFFFF, KERNEL_DATA_SEL);
-		gdt.writeDescriptor(3, (void*) 0x180000, (void*) 104, TSS_DESC);
 		gdt.update();
-		InterruptController::init(0x200000);
-		InterruptController::addInterrupt((uint8_t) 0x20, (void*) _preempt);
-		scheduler.createProcess((void*) task1_main);
-		scheduler.createProcess((void*) task2_main);
-		scheduler.createProcess((void*) task3_main);
-		scheduler.createProcess((void*) task4_main);
+		InterruptController::init(idtLocation);
+		for(int i = 0; i < 256; i++)
+		{
+			InterruptController::addInterrupt((uint8_t) i, (void*) _preempt);
+		}
 		setup_paging();
+		ATAPIODriver::initialize();
+		Filesystem fs;
+		fs.mount();
+		
+		const char* filename = "quark-test";
+		File* file = fs.getFileInfo(filename);
+		if(file != 0)
+		{
+			kout << "File '" << filename << "' contains " << (uint32_t) file->fileSectors << " sectors\n";
+			void* fileDest = heap.allocate(file->fileSectors * 512);
+			fs.loadFile(fileDest, filename);
+			//kout.memdump(fileDest, file->fileSectors * 512);
+			ELF prog(fileDest);
+			prog.load();
+			scheduler.createProcess(prog.getEntryPoint(), (void*) 0x410000);
+		}
+		else
+		{
+			kout << "File not found\n";
+		}
+		
 		asm("sti");
-		
-		//asm("cli");
 		void* a = inb;
-		
 		while(true) asm("hlt");
 	}
 }

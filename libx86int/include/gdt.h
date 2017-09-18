@@ -6,6 +6,7 @@
 #define TSS_DESC 0x89
 
 #define GDT_SIZE 256
+#define GDT_DESC_SIZE 8
 
 #include "gdtdescriptor.h"
 

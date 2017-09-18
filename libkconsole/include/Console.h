@@ -72,6 +72,6 @@ protected:
 	
 };
 
-
+extern Console kout;
 
 #endif

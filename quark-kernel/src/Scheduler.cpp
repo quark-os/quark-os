@@ -13,7 +13,10 @@ Scheduler::Scheduler()
 	pidCounter = 1;
 }
 
-/*
+/**
+ * Adds a new process to the process table with a given entry point.
+ * The scheduler will allocate space for the program's stack.
+ * 
  * IMPORTANT:
  * 
  * For testing purposes, the kernel allocates the process' stack in its
@@ -26,10 +29,19 @@ Scheduler::Scheduler()
  * calls the real entry point of the program, and terminates the process
  * throughthe kernel.
  * 
- * */
+ */
 size_t Scheduler::createProcess(void* entry)
 {
 	void* stack = reinterpret_cast<void*>(reinterpret_cast<uint32_t>(heap.allocate(PROCESS_STACK_SIZE)) + PROCESS_STACK_SIZE);
+	Process p(stack, entry, pidCounter);
+	p.initialize();
+	pidCounter++;
+	processTable.insertAtEnd(p);
+	return pidCounter - 1;
+}
+
+size_t Scheduler::createProcess(void* entry, void* stack)
+{
 	Process p(stack, entry, pidCounter);
 	p.initialize();
 	pidCounter++;

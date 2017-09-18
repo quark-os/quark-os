@@ -16,7 +16,7 @@ IDT::IDT(void* idtLocation)
 
 void IDT::update()
 {
-	loadIDT(IDT_SIZE * 8 - 1, (uint32_t) idt);
+	loadIDT(IDT_SIZE * IDT_DESC_SIZE - 1, (uint32_t) idt);
 }
 
 void IDT::writeDescriptor(uint8_t index, void* offset)

@@ -2,6 +2,7 @@
 #define __IDT_H
 
 #define IDT_SIZE 256
+#define IDT_DESC_SIZE 8
 
 #include "idtdescriptor.h"
 

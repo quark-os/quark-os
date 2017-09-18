@@ -5,7 +5,7 @@ CC = i686-elf-g++
 AR = i686-elf-ar
 CPPFLAGS += -Iinclude/ -O0 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fpermissive -c
 
-libpio: $(addprefix src/, $(obj))
+libatapio: $(addprefix src/, $(obj))
 	mkdir -p bin
 	$(AR) rcs bin/libpio.a $(addprefix src/, $(obj))
 
