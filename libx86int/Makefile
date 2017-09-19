@@ -1,4 +1,4 @@
-obj = idt.o idtdescriptor.o lidt.o interruptcontroller.o picdriver.o gdtdescriptor.o
+obj = idt.o idtdescriptor.o lidt.o interruptcontroller.o picdriver.o gdtdescriptor.o gdt.o
 
 CXX = i686-elf-g++
 CC = i686-elf-g++
