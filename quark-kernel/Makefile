@@ -1,4 +1,7 @@
-quark_obj = entry.o main.o scheduler.o Process.o Scheduler.o Interrupts.o Syscalls.o Filesystem.o File.o ELF.o PageAllocator.o math.o paging.o
+quark_obj = entry.o main.o scheduler.o Process.o Scheduler.o Interrupts.o \
+Syscalls.o Filesystem.o File.o ELF.o PageAllocator.o math.o paging.o \
+PagingStructure.o PageTable.o AddressSpace.o exceptions.o
+
 static_libs = libpio.a libx86idt.a libheap.a libkconsole.a libatapio.a
 link_script = linker.ld
 

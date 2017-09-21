@@ -14,6 +14,8 @@
 #include "ELF.h"
 #include "PageAllocator.h"
 #include "math.h"
+#include "AddressSpace.h"
+#include "paging.h"
 
 /*
  * Memory Map:
@@ -32,9 +34,7 @@ PageAllocator pageAllocator;
 
 extern "C"
 {
-	
-	void setup_paging();
-	
+		
 	void initializeHeap(void* heapLocation, uint32_t size);
 	
 	struct Block
@@ -74,7 +74,46 @@ extern "C"
 		{
 			InterruptController::addInterrupt((uint8_t) i, (void*) _preempt);
 		}
-		setup_paging();
+		InterruptController::addInterrupt((uint8_t) 0x80, (void*) _syscall);
+		InterruptController::addInterrupt((uint8_t) 0x0D, (void*) gp_fault);
+		InterruptController::addInterrupt((uint8_t) 0x0E, (void*) page_fault);
+		
+		AddressSpace kernelAddressSpace = AddressSpace();
+		for(int i = 0; i < 24; i++)
+		{
+			for(int j = 0; j < 1024; j++)
+			{
+				void* address = (void*) (j*4096*4096 + i*4096);
+				kernelAddressSpace.map(address, address);
+			}
+		}
+		
+		kout << sizeof(PagingStructure) << "\n";
+		
+		kernelAddressSpace.load();
+		start_paging();
+		
+		kernelAddressSpace.map((void*) 0x800000, (void*)0xF00000);
+		kernelAddressSpace.invalidate((void*) 0x800000);
+		int* array1 = (int*) 0x800000;
+		int* array2 = (int*) 0xF00000;
+		kout << "0xF00000 before write: ";
+		for(int i = 0; i < 4; i++)
+		{
+			kout << array2[i] << " ";
+		}
+		kout << "\n";
+		for(int i = 0; i < 4; i++)
+		{
+			array1[i] = rand();
+		}
+		kout << "0xF00000 after write: ";
+		for(int i = 0; i < 4; i++)
+		{
+			kout << array2[i] << " ";
+		}
+		kout << "\n";
+		
 		ATAPIODriver::initialize();
 		Filesystem fs;
 		fs.mount();
@@ -86,7 +125,6 @@ extern "C"
 			kout << "File '" << filename << "' contains " << (uint32_t) file->fileSectors << " sectors\n";
 			void* fileDest = heap.allocate(file->fileSectors * 512);
 			fs.loadFile(fileDest, filename);
-			//kout.memdump(fileDest, file->fileSectors * 512);
 			ELF prog(fileDest);
 			prog.load();
 			scheduler.createProcess(prog.getEntryPoint(), (void*) 0x410000);

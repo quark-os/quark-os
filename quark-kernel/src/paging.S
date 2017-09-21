@@ -1,5 +1,24 @@
 .intel_syntax noprefix
 
+.global start_paging
+start_paging:
+	mov eax, cr0
+	or eax, 0x80000001
+	mov cr0, eax
+	ret
+
+.global load_cr3
+load_cr3:
+	mov eax, [esp + 4]
+	mov cr3, eax
+	ret
+
+.global invalidate_page
+invalidate_page:
+	mov eax, [esp + 4]
+	invlpg [eax]
+	ret
+
 .global setup_paging
 setup_paging:
 	pusha

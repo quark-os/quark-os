@@ -1,5 +1,28 @@
 .intel_syntax noprefix
 
+.global gp_fault
+gp_fault:
+	pusha
+	call handleGeneralProtectionFault
+	popa
+	iret
+
+.global page_fault
+page_fault:
+	pusha
+	call handlePageFault
+	popa
+	iret
+
+.global syscall_test
+syscall_test:
+	pusha
+	mov eax, 0x10
+	mov bh, 'z'
+	int 0x80
+	popa
+	ret
+
 .global _preempt
 _preempt:
 	pushad
@@ -13,3 +36,28 @@ _preempt:
 	out 0x20, al
 	popad
 	iret
+
+# Syscalls:
+#	0x10	Print char	BH=char
+#	0x20	Preempt		
+.global _syscall
+_syscall:
+	pusha
+	mov edx, esp		# Save the stack pointer of the previous task
+	mov esp, 0x180000	# Switch to the kernel's stack
+	pusha				# Save registers on the kernel's stack
+	cmp eax, 0x10
+	je _printchar
+	cmp eax, 0x20
+	
+	_printchar:
+		mov [0xB8008], bh
+		jmp _syscallret
+		
+	# Other syscalls...
+	
+	_syscallret:
+	popa				# Load registers, including the calling task's stack pointer
+	mov esp, edx		# Restore the caller's stack
+	popa				# Restore registers to original state (before syscall)
+	iret				# Return control to caller
