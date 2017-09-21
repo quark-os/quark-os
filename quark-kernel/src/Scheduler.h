@@ -11,6 +11,8 @@ public:
 
 	Scheduler();
 	
+	size_t Scheduler::createProcess(AddressSpace addressSpace, void* entry);
+	
 	size_t createProcess(void* entry);
 	
 	size_t createProcess(void* entry, void* stack);

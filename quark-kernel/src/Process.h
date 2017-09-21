@@ -1,6 +1,8 @@
 #ifndef __PROCESS_H
 #define __PROCESS_H
 
+#include "AddressSpace.h"
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -12,6 +14,8 @@ public:
 	
 	Process(void* stack, void* entry, size_t pid);
 	
+	Process(void* stack, void* entry, size_t pid, AddressSpace addressSpace);
+	
 	void initialize();
 	
 	void* stack;
@@ -21,6 +25,8 @@ public:
 	size_t pid;
 	
 	AddressSpace addressSpace;
+	
+	AddressSpace childAddressSpace;
 
 };
 

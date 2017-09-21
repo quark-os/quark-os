@@ -1,5 +1,6 @@
 #include "Syscalls.h"
 #include "Scheduler.h"
+#include "PageAllocator.h"
 #include "math.h"
 
 extern Scheduler scheduler;
