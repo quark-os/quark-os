@@ -18,7 +18,7 @@ page_fault:
 syscall_test:
 	pusha
 	mov eax, 0x10
-	mov bh, 'z'
+	mov ch, 'z'
 	int 0x80
 	popa
 	ret
@@ -37,27 +37,55 @@ _preempt:
 	popad
 	iret
 
-# Syscalls:
-#	0x10	Print char	BH=char
-#	0x20	Preempt		
+#; Syscalls:
+#;	0x10	Print char	BH=char
+#;	0x20	Preempt		
 .global _syscall
 _syscall:
-	pusha
-	mov edx, esp		# Save the stack pointer of the previous task
-	mov esp, 0x180000	# Switch to the kernel's stack
-	pusha				# Save registers on the kernel's stack
+	push ebx
+	mov ebx, esp		#; Save the stack pointer of the previous task
+	mov esp, 0x180000	#; Switch to the kernel's stack
+	push ebx			#; Save task's stck pointer on kernel's stack
+	
 	cmp eax, 0x10
 	je _printchar
+	
 	cmp eax, 0x20
+	je _allocateregion
+	
+	cmp eax, 0x21
+	je _freeregion
+	
+	cmp eax, 0x30
+	je _fork
+	
+	jmp _syscallret
 	
 	_printchar:
-		mov [0xB8008], bh
+		mov [0xB8008], ch
+		jmp _syscallret
+	
+	_allocateregion:
+		push edx
+		push ecx
+		call allocateRegion
+		jmp _syscallret
+	
+	_freeregion:
+		push edx
+		push ecx
+		call allocateRegion
+		jmp _syscallret
+	
+	_fork:
+		push ecx
+		call fork
 		jmp _syscallret
 		
-	# Other syscalls...
+	#; Other syscalls...
 	
 	_syscallret:
-	popa				# Load registers, including the calling task's stack pointer
-	mov esp, edx		# Restore the caller's stack
-	popa				# Restore registers to original state (before syscall)
-	iret				# Return control to caller
+	pop ebx
+	mov esp, edx		#; Restore the caller's stack
+	pop ebx				#; Restore ebx to its value before syscall was entered
+	iret				#; Return control to caller (eax will have return value if present)

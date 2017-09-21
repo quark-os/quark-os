@@ -10,6 +10,15 @@ Process::Process(void* stack, void* entry, size_t pid)
 	this->stack = stack;
 	this->entry = entry;
 	this->pid = pid;
+	this->addressSpace = AddressSpace();
+}
+
+Process::Process(void* stack, void* entry, size_t pid, AddressSpace addressSpace)
+{
+	this->stack = stack;
+	this->entry = entry;
+	this->pid = pid;
+	this->addressSpace = addressSpace;
 }
 
 void Process::initialize()

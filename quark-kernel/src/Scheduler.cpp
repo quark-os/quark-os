@@ -13,6 +13,16 @@ Scheduler::Scheduler()
 	pidCounter = 1;
 }
 
+size_t Scheduler::createProcess(AddressSpace addressSpace, void* entry)
+{
+	void* stack = reinterpret_cast<void*>(0x4100000); // MUST be changed after kernel is mapped to high memory
+	Process p(stack, entry, pidCounter, addressSpace);
+	p.initialize();
+	pidCounter++;
+	processTable.insertAtEnd(p);
+	return pidCounter - 1;
+}
+
 /**
  * Adds a new process to the process table with a given entry point.
  * The scheduler will allocate space for the program's stack.
@@ -63,4 +73,9 @@ void* Scheduler::nextProcess(void* prevStack)
 	}
 	return processTable.get(currentProcess).stack;
 
+}
+
+Process& Scheduler::getCurrentProcess()
+{
+	return processTable.get(currentProcess);
 }

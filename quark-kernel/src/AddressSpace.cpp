@@ -61,3 +61,27 @@ void* AddressSpace::getPageDirectoryAddress()
 {
 	return pageDirectory.getTableAddress();
 }
+
+void* AddressSpace::getPhysicalAddress(void* linearAddress)
+{
+	uint32_t pageDirectoryIndex = (reinterpret_cast<uint32_t>(linearAddress) & 0xFFC00000) >> 22;
+	uint32_t pageTableIndex = (reinterpret_cast<uint32_t>(linearAddress) & 0x003FF000) >> 12;
+	
+	if(pageDirectory[pageDirectoryIndex].available == 1)
+	{
+		PageTable pageTable = pageDirectory[pageDirectoryIndex];
+		if(pageTable[pageTableIndex].available == 1)
+		{
+			uint32_t alignedAddress = pageTable[pageTableIndex].physicalAddress;
+			return reinterpret_cast<void*>(alignedAddress << 12);
+		}
+		else
+		{
+			return 0xFFFFFFFF;
+		}
+	}
+	else
+	{
+		return 0xFFFFFFFF;
+	}
+}

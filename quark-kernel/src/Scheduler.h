@@ -18,6 +18,8 @@ public:
 	void* nextProcess(void* prevStack);
 	
 	void killProcess(size_t pid);
+	
+	Process& getCurrentProcess();
 
 private:
 

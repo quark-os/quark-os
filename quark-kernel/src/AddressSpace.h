@@ -19,6 +19,8 @@ public:
 	
 	void* getPageDirectoryAddress();
 	
+	void* getPhysicalAddress(void* linearAddress);
+	
 private:
 
 	PageTable pageDirectory;

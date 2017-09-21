@@ -19,6 +19,8 @@ public:
 	void* entry;
 	
 	size_t pid;
+	
+	AddressSpace addressSpace;
 
 };
 

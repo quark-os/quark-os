@@ -10,6 +10,12 @@ extern "C"
 size_t createProcess(void* entry);
 		
 void* preempt(void* prevStack);
+
+void allocateRegion(void* linearAddress, size_t size);
+
+void freeRegion(void* linearAddress, size_t size);
+
+size_t fork(void* entryPoint);
 	
 }
 

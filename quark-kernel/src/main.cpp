@@ -86,38 +86,12 @@ extern "C"
 				void* address = (void*) (i*4096*1024 + j*4096); //void* address = (void*) (j*4096*1024 + i*4096);
 				kernelAddressSpace.map(address, address);
 			}
-		}
-		
-		kout << sizeof(PagingStructure) << "\n";
-		
+		}		
 		kernelAddressSpace.load();
 		start_paging();
 		
 		kout << "Started paging!\n";
-		
-		asm("hlt");
-		
-		/*kernelAddressSpace.map((void*) 0x800000, (void*)0xF00000);
-		kernelAddressSpace.invalidate((void*) 0x800000);
-		int* array1 = (int*) 0x800000;
-		int* array2 = (int*) 0xF00000;
-		kout << "0xF00000 before write: ";
-		for(int i = 0; i < 4; i++)
-		{
-			kout << array2[i] << " ";
-		}
-		kout << "\n";
-		for(int i = 0; i < 4; i++)
-		{
-			array1[i] = rand();
-		}
-		kout << "0xF00000 after write: ";
-		for(int i = 0; i < 4; i++)
-		{
-			kout << array2[i] << " ";
-		}
-		kout << "\n";*/
-		
+				
 		ATAPIODriver::initialize();
 		Filesystem fs;
 		fs.mount();
