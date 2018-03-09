@@ -18,3 +18,13 @@ install:
 	mkefs $(HOME)/.quark -b quark -o quark.img
 	mksysimg quark.img -m x86-bios-bootstrap/bin/x86-bios-bootstrap -o quark.iso
 	rm quark.img
+
+clean:
+	rm -f quark.iso
+	make -C libpio clean
+	make -C libx86int clean
+	make -C libheap clean
+	make -C libkconsole clean
+	make -C libatapio clean
+	make -C x86-bios-bootstrap clean
+	make -C quark-kernel clean

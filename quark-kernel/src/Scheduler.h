@@ -33,6 +33,4 @@ private:
 
 };
 
-extern Scheduler scheduler;
-
 #endif

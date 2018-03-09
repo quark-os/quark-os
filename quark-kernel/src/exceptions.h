@@ -4,12 +4,4 @@
 #include <stddef.h>
 #include <stdint.h>
 
-extern "C"
-{
-
-void handleGeneralProtectionFault(uint32_t errorCode);
-void handlePageFault(uint32_t errorCode);
-	
-}
-
 #endif

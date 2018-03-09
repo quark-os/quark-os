@@ -6,8 +6,8 @@
 class AddressSpace
 {
 public:
-	
-	AddressSpace();
+		
+	void initialize();
 	
 	void map(void* linearAddress, void* physicalAddress);
 	

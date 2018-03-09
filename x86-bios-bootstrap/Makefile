@@ -4,3 +4,6 @@ bootstrap_src = bootstrap.asm fs.asm util.asm
 x86-bios-bootstrap: #$(addprefix x86-bios-bootstrap/, $(bootstrap_src))
 	mkdir -p bin
 	nasm src/bootstrap.asm -o bin/x86-bios-bootstrap -O0
+
+clean:
+	rm bin/x86-bios-bootstrap

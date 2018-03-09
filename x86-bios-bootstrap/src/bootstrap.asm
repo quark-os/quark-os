@@ -72,7 +72,7 @@ MOV BYTE [gdt + 16 + 6], 0xCF ; Initialize GDT entry for code
 MOV WORD [gdtr], gdt_size
 MOV WORD [gdtr + 2], gdt
 
-MOV BYTE [status], status_gpt
+;MOV BYTE [status], status_gpt
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Read the GPT from the disk											;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,7 +92,7 @@ MOV CX, 8
 REPE CMPSB
 JNE NEAR error
 
-MOV BYTE [status], status_gptcheck_parts
+;MOV BYTE [status], status_gptcheck_parts
 MOV AX, [SI + 0x50 - 8]
 OR AX, AX
 JZ error
@@ -189,13 +189,13 @@ _sectionloop:
 		
 	; Zero memory block
 	MOV CX, [DS:SI + 20]
-	MOV DI, [DS:SI + 8]
-	MOV AX, [DS:SI + 10]
+	MOV DI, [DS:SI + 0x0C]
+	MOV AX, [DS:SI + 0x0E]
 	AND AX, 0x000F
 	ROR AX, 4	; Extract segment from upper part of pointer
 	MOV ES, AX
 	
-	CALL NEAR blkzero
+	;CALL NEAR blkzero
 		
 	PUSH SI ; Save location in program header array
 		
@@ -205,6 +205,7 @@ _sectionloop:
 	XOR SI, SI ; Restore SI to start of ELF
 
 	ADD SI, AX
+	
 	REP MOVSB
 		
 	POP SI ; Restore location in program header array
@@ -252,7 +253,6 @@ BITS 32
 ;halt32:
 ;	HLT
 ;	JMP halt32
-
 	MOV EAX, [charm_entry]
 	JMP EAX
 

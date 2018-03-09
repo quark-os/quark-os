@@ -1,13 +1,14 @@
 #include "AddressSpace.h"
 #include "PageAllocator.h"
+#include "Kernel.h"
 #include "paging.h"
 #include <stddef.h>
 
 extern PageAllocator pageAllocator;
 
-AddressSpace::AddressSpace()
+void AddressSpace::initialize()
 {
-	void* pageDirectoryAddress = pageAllocator.allocate(0);
+	void* pageDirectoryAddress = Kernel::pageAllocator.allocate(0);
 	pageDirectory = PageTable(pageDirectoryAddress);
 	for(int i = 0; i < PageTable::tableSize; i++)
 	{
@@ -21,7 +22,7 @@ void AddressSpace::map(void* linearAddress, void* physicalAddress)
 	uint32_t pageTableIndex = (reinterpret_cast<uint32_t>(linearAddress) & 0x003FF000) >> 12;
 	if(pageDirectory[pageDirectoryIndex].available == 0)
 	{
-		void* pageTableAddress = pageAllocator.allocate(0);
+		void* pageTableAddress = Kernel::pageAllocator.allocate(0);
 		pageDirectory[pageDirectoryIndex].physicalAddress = reinterpret_cast<uint32_t>(pageTableAddress) >> 12;
 		pageDirectory[pageDirectoryIndex].available = 1;
 		PageTable pageTable(pageDirectory[pageDirectoryIndex]);

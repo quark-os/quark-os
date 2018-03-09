@@ -9,7 +9,7 @@ Console kout;
 
 Console::Console()
 {
-	vga = (char*) 0xB8000;
+	vga = (char*) 0xC03FF000;
 	width = 80;
 	height = 25;
 	cursorX = 0;

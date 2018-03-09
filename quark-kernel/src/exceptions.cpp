@@ -1,16 +1,41 @@
-#include "exceptions.h"
+#include "Interrupts.h"
 #include "Console.h"
+#include "Kernel.h"
 
-void handleGeneralProtectionFault(uint32_t errorCode)
+__attribute__ ((interrupt))
+void handleDivisionByZero(interrupt_frame* frame)
 {
-	kout << "General protection fault with error code " << errorCode;
-	asm("cli");
-	asm("hlt");
+	kout << "Division by zero\n";
+	Kernel::panic();
 }
 
-void handlePageFault(uint32_t errorCode)
+__attribute__ ((interrupt))
+void handleInvalidOpcode(interrupt_frame* frame)
 {
-	kout << "Page fault with error code " << errorCode;
-	asm("cli");
-	asm("hlt");
+	kout << "Tried to execute invalid opcode\n";
+	Kernel::panic();
+}
+
+__attribute__ ((interrupt))
+void handleGeneralProtectionFault(interrupt_frame* frame, uint32_t errorCode)
+{
+	kout << "General protection fault with error code " << (void*) errorCode << "\n";
+	Kernel::panic();
+}
+
+__attribute__ ((interrupt))
+void handlePageFault(interrupt_frame* frame, uint32_t errorCode)
+{
+	uint32_t addr;
+	asm("movl %%cr2, %0"
+		: "=r" (addr));
+	kout << "Page fault with error code " << (void*) errorCode << " at address " << (void*) addr << "\n";
+	Kernel::panic();
+}
+
+__attribute__ ((interrupt))
+void handleDoubleFault(interrupt_frame* frame)
+{
+	kout << "Double fault!!!";
+	Kernel::panic();
 }

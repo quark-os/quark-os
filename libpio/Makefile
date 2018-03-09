@@ -5,7 +5,7 @@ CC = i686-elf-g++
 AR = i686-elf-ar
 CPPFLAGS += -Iinclude/ -O0 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fpermissive -c
 
-libatapio: $(addprefix src/, $(obj))
+libpio: $(addprefix src/, $(obj))
 	mkdir -p bin
 	$(AR) rcs bin/libpio.a $(addprefix src/, $(obj))
 
@@ -15,3 +15,6 @@ install:
 	cp include/*.h ~/.quark/include
 	cp bin/*.a ~/.quark/lib
 
+clean:
+	rm -f $(addprefix src/, $(obj))
+	rm -f bin/libpio.a

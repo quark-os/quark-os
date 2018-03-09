@@ -1,10 +1,8 @@
 #include "Scheduler.h"
-#include "Heap.h"
+#include "Kernel.h"
 
 // See note above Scheduler::createProcess()
 #define PROCESS_STACK_SIZE 65536
-
-Scheduler scheduler;
 
 Scheduler::Scheduler()
 {
@@ -42,7 +40,7 @@ size_t Scheduler::createProcess(AddressSpace addressSpace, void* entry)
  */
 size_t Scheduler::createProcess(void* entry)
 {
-	void* stack = reinterpret_cast<void*>(reinterpret_cast<uint32_t>(heap.allocate(PROCESS_STACK_SIZE)) + PROCESS_STACK_SIZE);
+	void* stack = reinterpret_cast<void*>(reinterpret_cast<uint32_t>(Kernel::kernelHeap.allocate(PROCESS_STACK_SIZE)) + PROCESS_STACK_SIZE);
 	Process p(stack, entry, pidCounter);
 	p.initialize();
 	pidCounter++;

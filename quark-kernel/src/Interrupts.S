@@ -1,19 +1,5 @@
 .intel_syntax noprefix
 
-.global gp_fault
-gp_fault:
-	pusha
-	call handleGeneralProtectionFault
-	popa
-	iret
-
-.global page_fault
-page_fault:
-	pusha
-	call handlePageFault
-	popa
-	iret
-
 .global syscall_test
 syscall_test:
 	pusha

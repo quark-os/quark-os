@@ -15,4 +15,6 @@ install:
 	cp include/*.h ~/.quark/include
 	cp bin/*.a ~/.quark/lib
 
-
+clean:
+	rm -f $(addprefix src/, $(obj))
+	rm -f bin/libheap.a

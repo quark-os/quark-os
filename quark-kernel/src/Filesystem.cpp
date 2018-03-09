@@ -1,5 +1,5 @@
 #include "Filesystem.h"
-#include "Heap.h"
+#include "Kernel.h"
 #include "ATAPIODriver.h"
 #include "Console.h"
 
@@ -17,7 +17,7 @@ void Filesystem::mount()
 	 * magic numbers and more clearly show what is going on (without
 	 * using comments).
 	 * */
-	void* gptHeader = heap.allocate(512);
+	void* gptHeader = Kernel::kernelHeap.allocate(512);
 	ATAPIODriver::hda->read(1, 1, gptHeader);
 	/*uint64_t gptSignature = *((uint64_t*) gptHeader);
 	if(gptSignature != 0x5452415020494645)
@@ -25,7 +25,7 @@ void Filesystem::mount()
 		kout << "[fs] Bad GPT signature: " << gptSignature << " (should be " << (uint64_t) 0x5452415020494645 << "); HACF\n";
 		while(true);
 	}*/
-	gptHeader = heap.free(gptHeader);
+	gptHeader = Kernel::kernelHeap.free(gptHeader);
 	
 	void* partHeader = heap.allocate(512);
 	ATAPIODriver::hda->read(2, 1, partHeader);
@@ -34,20 +34,20 @@ void Filesystem::mount()
 	
 	kout << "[fs] Part 1 is at " << (uint32_t) lbaBase << "\n";
 	
-	void* efsHeader = heap.allocate(512);
+	void* efsHeader = Kernel::kernelHeap.allocate(512);
 	ATAPIODriver::hda->read(lbaBase, 1, efsHeader);
 	uint64_t lbaOffset = ((uint64_t*) efsHeader)[3];
-	efsHeader = heap.free(efsHeader);
+	efsHeader = Kernel::kernelHeap.free(efsHeader);
 	
 	while(lbaOffset != 0)
 	{
-		void* fileDescriptor = heap.allocate(512);
+		void* fileDescriptor = Kernel::kernelHeap.allocate(512);
 		ATAPIODriver::hda->read(lbaBase + lbaOffset, 1, fileDescriptor);
 		lbaOffset = ((uint64_t*) fileDescriptor)[0];
 		//kout << "[fs] File found: " << (const char*) (reinterpret_cast<uint32_t>(fileDescriptor) + 256) << "\n";
 		File* file = new File((char*) (reinterpret_cast<uint32_t>(fileDescriptor) + 256), ((uint64_t*) fileDescriptor)[4], ((uint64_t*) fileDescriptor)[2]);
 		files.insertAtEnd(file);
-		fileDescriptor = heap.free(fileDescriptor);
+		fileDescriptor = Kernel::kernelHeap.free(fileDescriptor);
 	}
 }
 

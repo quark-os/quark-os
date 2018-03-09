@@ -1,6 +1,6 @@
 quark_obj = entry.o main.o scheduler.o Process.o Scheduler.o Interrupts.o \
 Syscalls.o Filesystem.o File.o ELF.o PageAllocator.o math.o paging.o \
-PagingStructure.o PageTable.o AddressSpace.o exceptions.o
+PagingStructure.o PageTable.o AddressSpace.o exceptions.o Kernel.o
 
 static_libs = libpio.a libx86idt.a libheap.a libkconsole.a libatapio.a
 link_script = linker.ld
@@ -25,3 +25,7 @@ quark: $(crti_obj) $(crtbegin_obj) $(crtend_obj) $(crtn_obj) $(addprefix src/, $
 install:
 	mkdir -p $(HOME)/.quark/bin
 	cp bin/quark $(HOME)/.quark
+
+clean:
+	rm -f $(addprefix src/, $(quark_obj))
+	rm bin/quark

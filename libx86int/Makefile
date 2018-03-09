@@ -1,4 +1,4 @@
-obj = idt.o idtdescriptor.o lidt.o interruptcontroller.o picdriver.o gdtdescriptor.o
+obj = idt.o idtdescriptor.o lidt.o interruptcontroller.o picdriver.o gdtdescriptor.o gdt.o
 
 CXX = i686-elf-g++
 CC = i686-elf-g++
@@ -14,3 +14,7 @@ install:
 	mkdir -p ~/.quark/lib
 	cp include/*.h ~/.quark/include
 	cp bin/*.a ~/.quark/lib
+
+clean:
+	rm -f $(addprefix src/, $(obj))
+	rm bin/libx86idt.a
